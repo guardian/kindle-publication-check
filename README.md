@@ -1,0 +1,1 @@
+# kindle-publication-check
