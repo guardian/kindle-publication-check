@@ -100,13 +100,13 @@ let sendEmail = (subject: string, body: string, targetAddresses: string[]): Prom
 };
 
 let sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> => sendEmail(
-    'Kindle publication succeeded',
+    `Kindle publication succeeded (${config.Today})`,
     `The Kindle edition for ${config.Today} was successfully published.\nIt contains ${info.articleCount} articles with ${info.imageCount} images.`,
     config.PassTargetAddresses
 );
 
 let sendFailureEmail = (error: string): Promise<SendEmailResponse> => sendEmail(
-    'Kindle publication failed',
+    `Kindle publication FAILED (${config.Today})`,
     `The Kindle edition for ${config.Today} was not successfully published. The error was: \n'${error}'`,
     config.FailureTargetAddresses
 );
