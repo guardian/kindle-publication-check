@@ -73,16 +73,15 @@ let getS3Objects = (bucket: string, prefix: string): Promise<ListObjectsOutput> 
 };
 
 let validatePublicationInfo = (result: ListObjectsOutput): Promise<PublicationInfo> => {
-    let articles: S3.Object[] = result.Contents.filter(object => object.Key.endsWith('.nitf.xml'));
-    let images: S3.Object[] = result.Contents.filter(object => object.Key.endsWith('.jpg'));
+    let info: PublicationInfo = {
+        articleCount: result.Contents.filter(object => object.Key.endsWith('.nitf.xml')).length,
+        imageCount: result.Contents.filter(object => object.Key.endsWith('.jpg')).length
+    };
 
-    if (articles.length >= config.MinimumArticleCount) {
-        return Promise.resolve({
-            articleCount: articles.length,
-            imageCount: images.length
-        })
+    if (info.articleCount >= config.MinimumArticleCount) {
+        return Promise.resolve(info)
     } else {
-        return Promise.reject(`Expected at least ${config.MinimumArticleCount} articles, but there are only ${articles.length}`)
+        return Promise.reject(`Expected at least ${config.MinimumArticleCount} articles, but there are only ${info.articleCount}`)
     }
 };
 
