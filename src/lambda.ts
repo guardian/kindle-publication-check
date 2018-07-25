@@ -20,14 +20,22 @@ type PublicationInfo = {
  * The AWS Lambda handler function.
  * Runs a series of checks against today's Kindle publication, then sends an email
  */
-export async function handler(): Promise<SendEmailResponse> {
-    return getRedirect(config.ManifestURL)
-        .then(testRedirect)
-        .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}`))
-        .then(validatePublicationInfo)
-        .then(sendSuccessEmail)
-        .catch(sendFailureEmail)
+export async function handler(): Promise<SendEmailResponse | string> {
+    let currentHour = new Date().getHours();
+
+    if (shouldRun(currentHour)) {
+        return getRedirect(config.ManifestURL)
+            .then(testRedirect)
+            .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}`))
+            .then(validatePublicationInfo)
+            .then(sendSuccessEmail)
+            .catch(sendFailureEmail)
+    } else {
+        return Promise.resolve(`Not running because hour is ${currentHour}`)
+    }
 }
+
+let shouldRun = (currentHour: number): boolean => config.RunHours.indexOf(currentHour) >= 0;
 
 let headRequestOptions = (url: URL): RequestOptions => {
     return {

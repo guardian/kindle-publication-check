@@ -39,6 +39,14 @@ Parameters:
   MinimumArticleCount:
     Description: Minimum expected articles in an edition
     Type: Number
+  RunHours:
+    Description: Comma-separated list of hours in which the lambda should run (because cloudwatch only allows UTC)
+    Type: String
+    Default: "0,1"
+  TimeZone:
+    Description: Timezone the environment should adopt (because cloudwatch only allows UTC)
+    Type: String
+    Default: "Europe/London"
 Resources:
   Lambda:
     Type: AWS::Serverless::Function
@@ -58,6 +66,8 @@ Resources:
           PassTargetAddresses: !Ref PassTargetAddresses
           FailureTargetAddresses: !Ref FailureTargetAddresses
           MinimumArticleCount: !Ref MinimumArticleCount
+          RunHours: !Ref RunHours
+          TZ: !Ref TimeZone
       CodeUri:
         Bucket: !Ref DeployBucket
         Key: !Sub ${Stack}/${Stage}/${App}/${App}.zip

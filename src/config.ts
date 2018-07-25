@@ -9,6 +9,7 @@ export class Config {
     PassTargetAddresses: string[] = process.env.PassTargetAddresses.split(',').map(a => a.trim());
     FailureTargetAddresses: string[] = process.env.FailureTargetAddresses.split(',').map(a => a.trim());
     MinimumArticleCount: number = parseInt(process.env.MinimumArticleCount);
+    RunHours: number[] = process.env.RunHours.split(',').map(h => parseInt(h.trim()));
 
     Today: string = moment().format('YYYY-MM-DD');
 }
