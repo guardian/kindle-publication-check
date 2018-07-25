@@ -15,6 +15,10 @@ type PublicationInfo = {
     imageCount: number
 }
 
+/**
+ * The AWS Lambda handler function.
+ * Runs a series of checks against today's Kindle publication, then sends an email
+ */
 export async function handler(): Promise<SendEmailResponse> {
     return getRedirect(config.ManifestURL)
         .then(testRedirect)
@@ -72,7 +76,7 @@ let validatePublicationInfo = (result: ListObjectsOutput): Promise<PublicationIn
     }
 };
 
-let sendEmail = (message: string, targetAddresses: string[]): Promise<SendEmailResponse> => {
+let sendEmail = (subject: string, body: string, targetAddresses: string[]): Promise<SendEmailResponse> => {
     let request: SendEmailRequest = {
         Destination: {
             ToAddresses: targetAddresses
@@ -80,12 +84,12 @@ let sendEmail = (message: string, targetAddresses: string[]): Promise<SendEmailR
         Message: {
             Subject: {
                 Charset: 'UTF-8',
-                Data: 'Kindle publication succeeded'
+                Data: subject
             },
             Body: {
                 Text: {
                     Charset: 'UTF-8',
-                    Data: message
+                    Data: body
                 }
             }
         },
@@ -96,11 +100,13 @@ let sendEmail = (message: string, targetAddresses: string[]): Promise<SendEmailR
 };
 
 let sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> => sendEmail(
+    'Kindle publication succeeded',
     `The Kindle edition for ${config.Today} was successfully published.\nIt contains ${info.articleCount} articles with ${info.imageCount} images.`,
     config.PassTargetAddresses
 );
 
 let sendFailureEmail = (error: string): Promise<SendEmailResponse> => sendEmail(
+    'Kindle publication failed',
     `The Kindle edition for ${config.Today} was not successfully published. The error was: \n'${error}'`,
     config.FailureTargetAddresses
 );
