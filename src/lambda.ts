@@ -2,6 +2,8 @@ import {ListObjectsOutput} from 'aws-sdk/clients/s3';
 import {SendEmailRequest, SendEmailResponse} from 'aws-sdk/clients/ses';
 import {Config} from './config';
 import S3 = require("aws-sdk/clients/s3");
+import {RequestOptions} from "http";
+import { URL } from "url"
 
 let http = require('http');
 let AWS = require('aws-sdk');
@@ -9,7 +11,6 @@ let s3 = new AWS.S3();
 let ses = new AWS.SES({region: 'eu-west-1'});
 let config = new Config();
 
-type Url = string
 type PublicationInfo = {
     articleCount: number
     imageCount: number
@@ -28,30 +29,39 @@ export async function handler(): Promise<SendEmailResponse> {
         .catch(sendFailureEmail)
 }
 
+let headRequestOptions = (url: URL): RequestOptions => {
+    return {
+        host: url.hostname,
+        path: url.pathname,
+        method: 'HEAD',
+        protocol: url.protocol
+    }
+};
+
 //Returns the redirect url, and also checks that it contains today's date
-let getRedirect = (url: Url): Promise<Url> => {
+let getRedirect = (url: URL): Promise<URL> => {
     return new Promise((resolve, reject) => {
-        http.get(url, response => {
+        http.request(headRequestOptions(url), response => {
             if (response.statusCode === 302) {
                 if (response.headers.location.includes(config.Today))
-                    resolve(response.headers.location);
+                    resolve(new URL(response.headers.location));
                 else
                     reject(`Expected today's date (${config.Today}), but got ${response.headers.location}`)
             } else {
                 reject(`Expected status code 302 (moved permanently) for url ${url}, got ${response.statusCode}`)
             }
-        })
+        }).end()
     })
 };
 
-let testRedirect = (url: Url): Promise<number> => {
+let testRedirect = (url: URL): Promise<number> => {
     return new Promise((resolve, reject) => {
-        http.get(url, response => {
+        http.request(headRequestOptions(url), response => {
             if (response.statusCode === 200)
                 resolve(response.statusCode);
             else
                 reject(`Expected status code 200 for url ${url}, got ${response.statusCode}`)
-        })
+        }).end()
     })
 };
 
