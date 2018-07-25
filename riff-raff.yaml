@@ -1,4 +1,4 @@
-stacks: [content-api-]
+stacks: [content-api]
 regions: [eu-west-1]
 
 deployments:
