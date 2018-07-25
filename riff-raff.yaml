@@ -1,0 +1,11 @@
+stacks: [content-api]
+regions: [eu-west-1]
+
+deployments:
+  kindle-publication-check:
+    type: aws-lambda
+    parameters:
+      prefixStack: false
+      bucket: content-api-dist
+      fileName: kindle-publication-check.zip
+      functionNames: [kindle-publication-check-]
