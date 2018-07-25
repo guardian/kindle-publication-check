@@ -31,10 +31,10 @@ Parameters:
     Description: Source email address
     Type: String
   PassTargetAddresses:
-    Description: Target email addresses to use when tests pass
+    Description: Comma-separated list of target email addresses to use when tests pass
     Type: String
   FailureTargetAddresses:
-    Description: Target email addresses to use when tests fail
+    Description: Comma-separated list of target email addresses to use when tests fail
     Type: String
   MinimumArticleCount:
     Description: Minimum expected articles in an edition
