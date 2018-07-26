@@ -39,6 +39,14 @@ Parameters:
   MinimumArticleCount:
     Description: Minimum expected articles in an edition
     Type: Number
+  RunHours:
+    Description: Comma-separated list of hours in which the lambda should run (because cloudwatch only allows UTC)
+    Type: String
+    Default: "0,1"
+  TimeZone:
+    Description: Timezone the environment should adopt (because cloudwatch only allows UTC)
+    Type: String
+    Default: "Europe/London"
 Resources:
   Lambda:
     Type: AWS::Serverless::Function
@@ -58,6 +66,8 @@ Resources:
           PassTargetAddresses: !Ref PassTargetAddresses
           FailureTargetAddresses: !Ref FailureTargetAddresses
           MinimumArticleCount: !Ref MinimumArticleCount
+          RunHours: !Ref RunHours
+          TZ: !Ref TimeZone
       CodeUri:
         Bucket: !Ref DeployBucket
         Key: !Sub ${Stack}/${Stage}/${App}/${App}.zip
@@ -78,3 +88,18 @@ Resources:
             Condition:
               StringEquals:
                 ses:FromAddress: !Ref SourceAddress
+
+      # These events run 6 mins after the kindle-gen lambda
+      Events:
+        DailyGMTRun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 1 * * ? *)  # Run at 01:16 AM GMT (UTC+0) every day
+        DailyBSTRunGMTPrerun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 0 * * ? *)  # Run at 12:16 AM GMT (UTC+0) / 01:16 AM BST (UTC+1) every day
+        DailyBSTPrerun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 23 * * ? *)  # Run at 12:16 AM BST (UTC+1) every day
