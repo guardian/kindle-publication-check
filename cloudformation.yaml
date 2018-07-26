@@ -88,3 +88,18 @@ Resources:
             Condition:
               StringEquals:
                 ses:FromAddress: !Ref SourceAddress
+
+      # These events run 6 mins after the kindle-gen lambda
+      Events:
+        DailyGMTRun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 1 * * ? *)  # Run at 01:16 AM GMT (UTC+0) every day
+        DailyBSTRunGMTPrerun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 0 * * ? *)  # Run at 12:16 AM GMT (UTC+0) / 01:16 AM BST (UTC+1) every day
+        DailyBSTPrerun:
+          Type: Schedule
+          Properties:
+            Schedule: cron(16 23 * * ? *)  # Run at 12:16 AM BST (UTC+1) every day
