@@ -29,10 +29,15 @@ export async function handler(): Promise<SendEmailResponse | string> {
 
 let shouldRun = (currentHour: number): boolean => config.RunHours.indexOf(currentHour) >= 0;
 
+let currentHourString = () => {
+    let currentHour = new Date().getHours();
+    currentHour.toString.length == 1 ? `0${currentHour}00` : `${currentHour}00`;
+};
+
 let run = (): Promise<SendEmailResponse> => {
     return getRedirect(config.ManifestURL)
         .then(testRedirect)
-        .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}`))
+        .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}/${currentHourString()}`))
         .then(validatePublicationInfo)
         .then(sendSuccessEmail)
         .catch(sendFailureEmail)
