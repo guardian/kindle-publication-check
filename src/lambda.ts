@@ -29,10 +29,13 @@ export async function handler(): Promise<SendEmailResponse | string> {
 
 let shouldRun = (currentHour: number): boolean => config.RunHours.indexOf(currentHour) >= 0;
 
+//This lambda runs either after midnight or after 1am. Default to 1am in case we want to manually run later
+let currentHourString = () => new Date().getHours() === 0 ? "0000" : "0100";
+
 let run = (): Promise<SendEmailResponse> => {
     return getRedirect(config.ManifestURL)
         .then(testRedirect)
-        .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}`))
+        .then(() => getS3Objects(config.KindleBucket, `${config.Stage}/${config.Today}/${currentHourString()}`))
         .then(validatePublicationInfo)
         .then(sendSuccessEmail)
         .catch(sendFailureEmail)
