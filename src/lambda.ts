@@ -29,10 +29,8 @@ export async function handler(): Promise<SendEmailResponse | string> {
 
 let shouldRun = (currentHour: number): boolean => config.RunHours.indexOf(currentHour) >= 0;
 
-let currentHourString = () => {
-    let currentHour = new Date().getHours();
-    currentHour.toString.length == 1 ? `0${currentHour}00` : `${currentHour}00`;
-};
+//This lambda runs either after midnight or after 1am. Default to 1am in case we want to manually run later
+let currentHourString = () => new Date().getHours() === 0 ? "0000" : "0100";
 
 let run = (): Promise<SendEmailResponse> => {
     return getRedirect(config.ManifestURL)
