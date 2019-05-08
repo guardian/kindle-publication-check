@@ -92,7 +92,8 @@ export function checkPublication(config: Config): Promise<SendEmailResponse> {
                     }
                 }
             },
-            Source: config.SourceAddress
+            Source: config.SourceAddress,
+            ReturnPath: config.ReturnPath
         };
 
         return ses.sendEmail(request).promise()
