@@ -30,9 +30,6 @@ Parameters:
   SourceAddress:
     Description: Source email address
     Type: String
-  ReturnPath:
-    Description: Email address for bounces (must be set for SPF authentication)
-    Type: String
   PassTargetAddresses:
     Description: Comma-separated list of target email addresses to use when tests pass
     Type: String
@@ -66,6 +63,7 @@ Resources:
           KindleBucket: !Ref KindleBucket
           Stage: !Ref Stage
           SourceAddress: !Ref SourceAddress
+          ReturnPath: !Ref SourceAddress
           PassTargetAddresses: !Ref PassTargetAddresses
           FailureTargetAddresses: !Ref FailureTargetAddresses
           MinimumArticleCount: !Ref MinimumArticleCount
