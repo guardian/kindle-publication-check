@@ -130,7 +130,7 @@ export function checkPublication(config: Config): Promise<SendEmailResponse> {
                 if (err) {
                     reject(err);
                     return;
-                } else if (data.events.length < 20) {
+                } else if (!data.events.some(event => event.message.includes(`Starting to publish files for ${config.Today}`))) {
                     throw new Error(`Log stream ${logStream.logStreamName} in ${logGroupName} only contains ${data.events.length} but we expected hundreds of them`)
                 }
 
