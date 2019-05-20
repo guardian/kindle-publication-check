@@ -137,7 +137,7 @@ export function checkPublication(config: Config): Promise<SendEmailResponse> {
                 resolve(data.events);
             })
         });
-        return getLogsFor(logStreams[0]).catch(() => getLogsFor(logStreams[1]));
+        return logStreams.reduce((p, logStream) => p.catch(() => getLogsFor(logStream)), Promise.reject());
     }
 
     const checkLogs = (allLogs: Array<AWS.CloudWatchLogs.OutputLogEvent>): Promise<void> => {
