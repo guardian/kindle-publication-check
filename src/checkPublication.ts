@@ -6,15 +6,23 @@ import * as AWS from "aws-sdk";
 import { request, RequestOptions } from "http";
 
 let s3 = new AWS.S3();
-let ses = new AWS.SES({ region: "eu-west-1" });
-let logs = new AWS.CloudWatchLogs();
+let logs = new AWS.CloudWatchLogs({ region: "eu-west-1" });
 
 type PublicationInfo = {
   articleCount: number;
   imageCount: number;
 };
 
-export function checkPublication(config: Config): Promise<SendEmailResponse> {
+type SendEmailFn = (
+  x: string,
+  y: string,
+  z: string[]
+) => Promise<AWS.SES.SendEmailResponse>;
+
+export function checkPublication(
+  config: Config,
+  sendEmail: SendEmailFn
+): Promise<SendEmailResponse> {
   const logGroupName: string = `/aws/lambda/kindle-gen-${config.Stage}`;
 
   //This lambda runs either after midnight or after 1am. Default to 1am in case we want to manually run later
@@ -151,12 +159,14 @@ export function checkPublication(config: Config): Promise<SendEmailResponse> {
                 )
               )
             ) {
-              throw new Error(
-                `Log stream ${
-                  logStream.logStreamName
-                } in ${logGroupName} only contains ${
-                  data.events.length
-                } but we expected hundreds of them`
+              reject(
+                new Error(
+                  `Log stream ${
+                    logStream.logStreamName
+                  } in ${logGroupName} only contains ${
+                    data.events.length
+                  } but we expected hundreds of them`
+                )
               );
             }
 
@@ -180,34 +190,6 @@ export function checkPublication(config: Config): Promise<SendEmailResponse> {
     } else {
       return Promise.resolve();
     }
-  };
-
-  let sendEmail = (
-    subject: string,
-    body: string,
-    targetAddresses: string[]
-  ): Promise<SendEmailResponse> => {
-    let request: SendEmailRequest = {
-      Destination: {
-        ToAddresses: targetAddresses
-      },
-      Message: {
-        Subject: {
-          Charset: "UTF-8",
-          Data: subject
-        },
-        Body: {
-          Text: {
-            Charset: "UTF-8",
-            Data: body
-          }
-        }
-      },
-      Source: config.SourceAddress,
-      ReturnPath: config.ReturnPath
-    };
-
-    return ses.sendEmail(request).promise();
   };
 
   let sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> =>
