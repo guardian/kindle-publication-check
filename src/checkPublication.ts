@@ -159,15 +159,7 @@ export function checkPublication(
                 )
               )
             ) {
-              reject(
-                new Error(
-                  `Log stream ${
-                    logStream.logStreamName
-                  } in ${logGroupName} only contains ${
-                    data.events.length
-                  } but we expected hundreds of them`
-                )
-              );
+              resolve([]);
             }
 
             resolve(data.events);
@@ -175,8 +167,8 @@ export function checkPublication(
         );
       });
     return logStreams.reduce(
-      (p, logStream) => p.catch(() => getLogsFor(logStream)),
-      Promise.reject()
+      (p, logStream) => p.then(logs => logs.length == 0 ? getLogsFor(logStream) : logs),
+      Promise.resolve([])
     );
   };
 
