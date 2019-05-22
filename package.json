@@ -6,12 +6,12 @@
   "buildDir": "./target",
   "riffraffFile": "./riff-raff.yaml",
   "dependencies": {
-    "aws-sdk": "^2.264.1",
-    "typescript": "2.8.3",
-    "moment": "2.22.2"
+    "aws-sdk": "^2.458.0",
+    "moment": "^2.24.0",
+    "typescript": "^3.4.5"
   },
   "devDependencies": {
-    "@types/node": "8.10.0",
+    "@types/node": "^8.10.0",
     "node-riffraff-artefact": "^2.0.1"
   },
   "scripts": {
