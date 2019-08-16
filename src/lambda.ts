@@ -12,13 +12,12 @@ let ses = new AWS.SES({ region: "eu-west-1" });
 export async function handler(): Promise<AWS.SES.SendEmailResponse | string> {
   const now = new Date();
   
-  const currentHour = now.getHours();
-  const currentUTCHour = now.getUTCHours();
-  const isDST = currentHour == currentUTCHour + 1;
+  const currentHour = now.getUTCHours();
+  const isDST = now.getTimezoneOffset() > 0;
 
   let config = new Config();
 
-  let shouldRun = config.RunHours.indexOf(isDST ? currentHour : currentUTCHour) >= 0;
+  let shouldRun = config.RunHours.indexOf(isDST ? currentHour + 1 : currentHour) >= 0;
 
   if (shouldRun) return checkPublication(config, sendEmail(config));
   else return Promise.resolve(`Not running because hour is ${currentHour}`);
