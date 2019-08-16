@@ -10,11 +10,15 @@ let ses = new AWS.SES({ region: "eu-west-1" });
  * Runs a series of checks against today's Kindle publication, then sends an email
  */
 export async function handler(): Promise<AWS.SES.SendEmailResponse | string> {
-  let currentHour = new Date().getHours();
+  const now = new Date();
+  
+  const currentHour = now.getHours();
+  const currentUTCHour = now.getUTCHours();
+  const isDST = currentHour == currentUTCHour + 1;
 
   let config = new Config();
 
-  let shouldRun = config.RunHours.indexOf(currentHour) >= 0;
+  let shouldRun = config.RunHours.indexOf(isDST ? currentHour : currentUTCHour) >= 0;
 
   if (shouldRun) return checkPublication(config, sendEmail(config));
   else return Promise.resolve(`Not running because hour is ${currentHour}`);
