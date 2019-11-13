@@ -53,7 +53,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${App}-${Stage}
       Description: Checks the status of Kindle publication and sends emails
-      Runtime: nodejs8.10
+      Runtime: nodejs10.x
       Handler: lambda.handler
       MemorySize: 128
       Timeout: 300

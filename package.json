@@ -5,6 +5,9 @@
   "projectName": "Off Platform::kindle-publication-check",
   "buildDir": "./target",
   "riffraffFile": "./riff-raff.yaml",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "dependencies": {
     "aws-sdk": "^2.458.0",
     "moment": "^2.24.0",
