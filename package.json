@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "aws-sdk": "^2.458.0",
-    "moment": "^2.24.0",
-    "typescript": "^3.4.5"
+    "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@types/node": "^8.10.0",
+    "typescript": "^3.4.5",
+    "@types/node": "12.12.7",
     "node-riffraff-artefact": "^2.0.1"
   },
   "scripts": {
