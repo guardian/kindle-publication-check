@@ -47,9 +47,6 @@ Parameters:
     Description: Timezone the environment should adopt (because cloudwatch only allows UTC)
     Type: String
     Default: "Europe/London"
-  KindleGenLogStreamArn:
-    Description: ARN for the log stream of the kindle generation process
-    Type: String
 Resources:
   Lambda:
     Type: AWS::Serverless::Function
@@ -98,7 +95,7 @@ Resources:
               - logs:GetLogEvents
               - logs:DescribeLogStreams
             Resource:
-              - !Ref KindleGenLogStreamArn
+              - "*"
 
       # These events run 6 mins after the kindle-gen lambda
       Events:
