@@ -89,6 +89,13 @@ Resources:
             Condition:
               StringEquals:
                 ses:FromAddress: !Ref SourceAddress
+        - Statement:
+            Effect: Allow
+            Action:
+              - logs:GetLogEvents
+              - logs:DescribeLogStreams
+            Resource:
+              - "*"
 
       # These events run 6 mins after the kindle-gen lambda
       Events:
