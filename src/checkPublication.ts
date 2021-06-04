@@ -204,16 +204,17 @@ export function checkPublication(
       config.FailureTargetAddresses
     );
 
-  return getRedirect(config.ManifestURL)
-    .then(testRedirect)
-    .then(() => getLogs(logGroupName).then(checkLogs))
-    .then(() =>
-      getS3Objects(
-        config.KindleBucket,
-        `${config.Stage}/${config.Today}/${currentHourString()}`
+  return getLogs(logGroupName)
+      .then(checkLogs)
+      .then(() => getRedirect(config.ManifestURL))
+      .then(testRedirect)
+      .then(() =>
+          getS3Objects(
+              config.KindleBucket,
+              `${config.Stage}/${config.Today}/${currentHourString()}`
+          )
       )
-    )
-    .then(validatePublicationInfo)
-    .then(sendSuccessEmail)
-    .catch(sendFailureEmail);
+      .then(validatePublicationInfo)
+      .then(sendSuccessEmail)
+      .catch(sendFailureEmail);
 }
