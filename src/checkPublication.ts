@@ -176,7 +176,7 @@ export function checkPublication(
     allLogs: Array<AWS.CloudWatchLogs.OutputLogEvent>
   ): Promise<void> => {
     const errorRegexp = /WARN|ERROR|FATAL/;
-    const errors = allLogs.filter(log => errorRegexp.test(log.message));
+    const errors = allLogs.filter(log => errorRegexp.test(log.message)).map(log => log.message);
     if (errors.length > 0) {
       return Promise.reject(errors);
     } else {
