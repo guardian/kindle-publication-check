@@ -176,7 +176,7 @@ export function checkPublication(
     allLogs: Array<AWS.CloudWatchLogs.OutputLogEvent>
   ): Promise<void> => {
     const errorRegexp = /WARN|ERROR|FATAL/;
-    const errors = allLogs.filter(log => errorRegexp.test(log.message));
+    const errors = allLogs.filter(log => errorRegexp.test(log.message)).map(log => log.message);
     if (errors.length > 0) {
       return Promise.reject(errors);
     } else {
@@ -204,16 +204,17 @@ export function checkPublication(
       config.FailureTargetAddresses
     );
 
-  return getRedirect(config.ManifestURL)
-    .then(testRedirect)
-    .then(() => getLogs(logGroupName).then(checkLogs))
-    .then(() =>
-      getS3Objects(
-        config.KindleBucket,
-        `${config.Stage}/${config.Today}/${currentHourString()}`
+  return getLogs(logGroupName)
+      .then(checkLogs)
+      .then(() => getRedirect(config.ManifestURL))
+      .then(testRedirect)
+      .then(() =>
+          getS3Objects(
+              config.KindleBucket,
+              `${config.Stage}/${config.Today}/${currentHourString()}`
+          )
       )
-    )
-    .then(validatePublicationInfo)
-    .then(sendSuccessEmail)
-    .catch(sendFailureEmail);
+      .then(validatePublicationInfo)
+      .then(sendSuccessEmail)
+      .catch(sendFailureEmail);
 }
