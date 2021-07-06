@@ -9,7 +9,7 @@ let ses = new AWS.SES({ region: "eu-west-1" });
  * The AWS Lambda handler function.
  * Runs a series of checks against today's Kindle publication, then sends an email
  */
-export async function handler(): Promise<AWS.SES.SendEmailResponse | string> {
+export async function handler(event: { forceRun? : boolean }): Promise<AWS.SES.SendEmailResponse | string> {
   const now = new Date();
   
   const currentHour = now.getUTCHours();
@@ -17,7 +17,7 @@ export async function handler(): Promise<AWS.SES.SendEmailResponse | string> {
 
   let config = new Config();
 
-  let shouldRun = config.RunHours.indexOf(isDST ? currentHour + 1 : currentHour) >= 0;
+  let shouldRun = !!event.forceRun || config.RunHours.indexOf(isDST ? currentHour + 1 : currentHour) >= 0;
 
   if (shouldRun) return checkPublication(config, sendEmail(config));
   else return Promise.resolve(`Not running because hour is ${currentHour}`);
