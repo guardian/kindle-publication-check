@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
 
+setupNvm() {
+    export NVM_DIR="$HOME/.nvm"
+    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+    nvm install
+    nvm use
+}
+
+setupNvm
+
 npm install -g yarn
 
 yarn install
