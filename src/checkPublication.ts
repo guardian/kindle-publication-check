@@ -205,13 +205,13 @@ export function checkPublication(
   const buildPublicationErrorSubject = () : string => {
     let now = new Date();
     if (now.getMonth() === 11 && now.getDate() === 25) {
-      return "No kindle publication on Christmas Day. Merry Christmas!"
+      return 'No kindle publication on Christmas Day. Merry Christmas!';
     }
     else if (addDays(7).getMonth() === 3 && now.getDay() === 0 && now.getMonth() == 2 && now.getHours() === 2)
     {
-      return `Kindle publication check failed (${config.Today}) due to BST clock change`
+      return `Kindle publication check failed (${config.Today}) due to BST clock change`;
     }
-    return `Kindle publication FAILED (${config.Today})`
+    return `Kindle publication FAILED (${config.Today})`;
   }
 
 
