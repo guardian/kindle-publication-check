@@ -196,18 +196,18 @@ export function checkPublication(
     );
 
 
-  const addDays = function(days) {
-    let date = new Date();
-    date.setDate(date.getDate() + days);
-    return date;
-  }
-
   const buildPublicationErrorSubject = () : string => {
     let now = new Date();
+    let nextWeek = new Date();
+    nextWeek.setDate(now.getDate()+ 7)
+
+    // Check if it's Christmas Day - we do not expect a Kindle publication
     if (now.getMonth() === 11 && now.getDate() === 25) {
       return 'No kindle publication on Christmas Day. Merry Christmas!';
     }
-    else if (addDays(7).getMonth() === 3 && now.getDay() === 0 && now.getMonth() == 2 && now.getHours() === 2)
+    // Check if Kindle publication check failure is due to BST clock change:
+    // If today is Sunday and month is March and time is 2 am and next Sunday is in April (this is the last Sunday in March)
+    else if (now.getDay() === 0 && now.getMonth() == 2 && now.getHours() === 2 && nextWeek.getMonth() === 3)
     {
       return `Kindle publication check failed (${config.Today}) due to BST clock change`;
     }
