@@ -195,25 +195,30 @@ export function checkPublication(
       config.PassTargetAddresses
     );
 
+  const isChristmasDay = (today: Date) : boolean => {
+    return (today.getMonth() === 11 && today.getDate() === 25)
+  }
+
+  const isLastSundayInMarch = (today: Date) : boolean => {
+    // The last Sunday will definitely fall on one of the last 7 days of the month (March 25th - 31st)
+    return (today.getDay() === 0 && today.getMonth() == 2 && today.getDate() > 24)
+  }
 
   const buildPublicationErrorSubject = () : string => {
     let now = new Date();
-    let nextWeek = new Date();
-    nextWeek.setDate(now.getDate()+ 7)
+    let subject = `Kindle publication FAILED (${config.Today})`;
 
-    // Check if it's Christmas Day - we do not expect a Kindle publication
-    if (now.getMonth() === 11 && now.getDate() === 25) {
-      return 'No kindle publication on Christmas Day. Merry Christmas!';
+    if (isChristmasDay(now)) {
+      subject = 'No kindle publication on Christmas Day. Merry Christmas!';
     }
-    // Check if Kindle publication check failure is due to BST clock change:
-    // If today is Sunday and month is March and time is 2 am and next Sunday is in April (this is the last Sunday in March)
-    else if (now.getDay() === 0 && now.getMonth() == 2 && now.getHours() === 2 && nextWeek.getMonth() === 3)
-    {
-      return `Kindle publication check failed (${config.Today}) due to BST clock change`;
+
+    // On the last Sunday of March, we expect the second kindle check to fail due to BST clock change
+    else if (isLastSundayInMarch(now) && now.getHours() === 2) {
+      subject = `Kindle publication check failed (${config.Today}) due to BST clock change`;
     }
-    return `Kindle publication FAILED (${config.Today})`;
+
+    return subject;
   }
-
 
   let sendFailureEmail = (error: string): Promise<SendEmailResponse> =>
     sendEmail(
