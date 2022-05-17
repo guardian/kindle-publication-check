@@ -5,8 +5,8 @@ import { URL } from "url";
 import * as AWS from "aws-sdk";
 import { request, RequestOptions } from "http";
 
-let s3 = new AWS.S3();
-let logs = new AWS.CloudWatchLogs({ region: "eu-west-1" });
+const s3 = new AWS.S3();
+const logs = new AWS.CloudWatchLogs({ region: "eu-west-1" });
 
 type PublicationInfo = {
   articleCount: number;
@@ -26,9 +26,9 @@ export function checkPublication(
   const logGroupName: string = `/aws/lambda/kindle-gen-${config.Stage}`;
 
   //This lambda runs either after midnight or after 1am. Default to 1am in case we want to manually run later
-  let currentHourString = () => (new Date().getHours() === 0 ? "0000" : "0100");
+  const currentHourString = () => (new Date().getHours() === 0 ? "0000" : "0100");
 
-  let headRequestOptions = (url: URL): RequestOptions => {
+  const headRequestOptions = (url: URL): RequestOptions => {
     return {
       host: url.hostname,
       path: url.pathname,
@@ -38,7 +38,7 @@ export function checkPublication(
   };
 
   //Returns the redirect url, and also checks that it contains today's date
-  let getRedirect = (url: URL): Promise<URL> => {
+  const getRedirect = (url: URL): Promise<URL> => {
     return new Promise((resolve, reject) => {
       request(headRequestOptions(url), response => {
         if (response.statusCode === 302) {
@@ -61,7 +61,7 @@ export function checkPublication(
     });
   };
 
-  let testRedirect = (url: URL): Promise<number> => {
+  const testRedirect = (url: URL): Promise<number> => {
     return new Promise((resolve, reject) => {
       request(headRequestOptions(url), response => {
         if (response.statusCode === 200) resolve(response.statusCode);
@@ -75,7 +75,7 @@ export function checkPublication(
     });
   };
 
-  let getS3Objects = (
+  const getS3Objects = (
     bucket: string,
     prefix: string
   ): Promise<ListObjectsOutput> => {
@@ -87,7 +87,7 @@ export function checkPublication(
       .promise();
   };
 
-  let validatePublicationInfo = (
+  const validatePublicationInfo = (
     result: ListObjectsOutput
   ): Promise<PublicationInfo> => {
     let info: PublicationInfo = {
@@ -184,7 +184,7 @@ export function checkPublication(
     }
   };
 
-  let sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> =>
+  const sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> =>
     sendEmail(
       `Kindle publication succeeded (${config.Today})`,
       `The Kindle edition for ${
@@ -195,9 +195,55 @@ export function checkPublication(
       config.PassTargetAddresses
     );
 
-  let sendFailureEmail = (error: string): Promise<SendEmailResponse> =>
+  const addDaysToDate = (date: Date, days: number): Date => {
+    // due to a JS quirk (see https://stackoverflow.com/questions/563406/how-to-add-days-to-date)
+    // using (date.toString()) ensures the correct year is always used
+    const d = new Date(date.toString());  
+    d.setDate(date.getDate() + days);
+    return d;
+  };
+
+  const isChristmasDay = (date: Date) : boolean => {
+    const DECEMBER = 11;  // .getMonth returns zero-based values
+    return (
+        date.getMonth() === DECEMBER && 
+        date.getDate() === 25
+    );
+  };
+
+  const isBSTClockForwardTime = (date: Date) : boolean => {
+    // The last Sunday in March is when UK clocks advance from GMT to BST
+    // On this date, there is a 00:00 but there is no 01:00
+    
+    const SUNDAY = 0; // .getDay() returns zero-based values and Sunday is the first day of the week
+    const MARCH = 2;  // .getMonth() also returns zero-based values 
+    const APRIL = 3;  
+    const nextWeek = addDaysToDate(date, 7);
+
+    return (
+        date.getDay() === SUNDAY && 
+        date.getMonth() === MARCH && 
+        date.getHours() === 2 && // we only care about this when 01:00 has become 02:00
+        nextWeek.getMonth() === APRIL   
+    );  
+  };
+
+  const buildPublicationErrorSubject = () : string => {
+    let now = new Date();
+    let subject = `Kindle publication FAILED (${config.Today})`;
+
+    if (isChristmasDay(now)) {
+      subject = 'No kindle publication on Christmas Day. Merry Christmas!';
+    } else if (isBSTClockForwardTime(now)) {
+      subject = `Kindle publication check failed (${config.Today}) due to BST clock change`;
+    }
+
+    return subject;
+  };
+
+  const sendFailureEmail = (error: string): Promise<SendEmailResponse> =>
     sendEmail(
-      `Kindle publication FAILED (${config.Today})`,
+      buildPublicationErrorSubject(),
       `The Kindle edition for ${
         config.Today
       } was not successfully published. The error was: \n'${error}'`,
