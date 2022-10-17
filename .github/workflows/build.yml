@@ -25,6 +25,7 @@ jobs:
           role-session-name: kindle-publication-check-build
       #- run: cp package.json target    # hope we don't have to do this any more
       #- run: cp riff-raff.yaml target   # hope we don't need this, as long as riff-raff.yaml is sent to S3 too
+      - run: npm install
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
       - uses: guardian/actions-riff-raff@v1
