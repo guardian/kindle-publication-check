@@ -1,41 +1,32 @@
 # Initiate a github actions-initiated build
-
 name: Build and upload artifact on push to any branch
-
 on:
-  [push]
+  push: {}
   workflow_dispatch: {}
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
       checks: write
       issues: read
       pull-requests: write
-
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: 'npm'
-
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: eu-west-1
           role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           role-session-name: kindle-publication-check-build
-
       #- run: cp package.json target    # hope we don't have to do this any more
       #- run: cp riff-raff.yaml target   # hope we don't need this, as long as riff-raff.yaml is sent to S3 too
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
-
       - uses: guardian/actions-riff-raff@v1
         with:
           dryRun: true
