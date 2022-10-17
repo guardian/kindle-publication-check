@@ -28,7 +28,7 @@ jobs:
       - run: npm install
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
-      - uses: guardian/actions-riff-raff@v1
+      - uses: guardian/actions-riff-raff@v2
         with:
           dryRun: true
           app: kindle-publication-check
