@@ -32,7 +32,7 @@ jobs:
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
       - run: mkdir dist
-      - run: zip dist/kindle-publication-check.zip target/*
+      - run: zip -r dist/kindle-publication-check.zip target
       - uses: guardian/actions-riff-raff@v2
         with:
           app: kindle-publication-check
