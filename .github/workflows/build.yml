@@ -35,7 +35,6 @@ jobs:
       - run: npm run build  # <-- outputs files to ./target
       - uses: guardian/actions-riff-raff@v2
         with:
-          dryRun: true
           app: kindle-publication-check
           configPath: riff-raff.yaml   # <-- hope we don't have to copy to ./target like the old scripts used to
           buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
