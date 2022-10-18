@@ -28,39 +28,16 @@ jobs:
         run: |
           LAST_TEAMCITY_BUILD=59
           echo GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD )) >> $GITHUB_ENV
-      #- run: cp package.json target    # hope we don't have to do this any more
-      #- run: cp riff-raff.yaml target   # hope we don't need this, as long as riff-raff.yaml is sent to S3 too
       - run: npm install
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
-      # make a ./dist dir and zip the target files into there (this will be used in contentDirectories below)
       - run: mkdir dist
       - run: zip dist/kindle-publication-check.zip target/*
-# Revert to actions-riff-raff@v1 because contentDirectories are a pain in the @55
-#      - uses: guardian/actions-riff-raff@v2
-#        with:
-#          app: kindle-publication-check
-#          configPath: riff-raff.yaml   # <-- hope we don't have to copy to ./target like the old scripts used to
-#          buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
-#          contentDirectories: |
-#            kindle-publication-check.zip:
-#              - dist/kindle-publication-check.zip
-      - uses: guardian/actions-riff-raff@v1
+      - uses: guardian/actions-riff-raff@v2
         with:
           app: kindle-publication-check
-          config: |
-            stacks: [content-api]
-            regions: [eu-west-1]
-            allowedStages:
-              - PROD                 
-            deployments:
-              kindle-publication-check:
-                type: aws-lambda
-                sources:
-                  - dist/kindle-publication-check.zip
-                  - riff-raff.yaml  # <-- no idea if this should be here
-                parameters:
-                  prefixStack: false
-                  bucket: content-api-dist
-                  fileName: kindle-publication-check.zip
-                  functionNames: [ "kindle-publication-check-" ]
+          configPath: riff-raff.yaml
+          buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
+          contentDirectories: |
+            kindle-publication-check:
+              - dist/kindle-publication-check.zip
