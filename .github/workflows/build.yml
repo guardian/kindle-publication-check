@@ -33,6 +33,9 @@ jobs:
       - run: npm install
       - run: npm run clean  # <-- delete any previous ./target dir
       - run: npm run build  # <-- outputs files to ./target
+      # make a ./dist dir and zip the target files into there (this will be used in contentDirectories below)
+      - run: mkdir dist
+      - run: zip dist/kindle-publication-check.zip target/*
       - uses: guardian/actions-riff-raff@v2
         with:
           app: kindle-publication-check
@@ -40,4 +43,4 @@ jobs:
           buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
           contentDirectories: |
             lambda:
-              - target   # <-- hope this is understood to be a local sub dir (./target)
+              - dist   # <-- hope this is understood to be a local sub dir (./dist)
