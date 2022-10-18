@@ -42,5 +42,5 @@ jobs:
           configPath: riff-raff.yaml   # <-- hope we don't have to copy to ./target like the old scripts used to
           buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
           contentDirectories: |
-            lambda:
-              - dist   # <-- hope this is understood to be a local sub dir (./dist)
+            kindle-publication-check.zip:
+              - dist/kindle-publication-check.zip
