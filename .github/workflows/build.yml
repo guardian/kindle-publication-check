@@ -31,6 +31,7 @@ jobs:
       - run: yarn install
       - run: yarn run clean  # <-- delete any previous ./target dir
       - run: yarn run build  # <-- outputs files to ./target
+      - run: cp package.json target # <-- without this we won't get our dependencies
       - run: cd target
       - run: yarn install --production  # <-- creates our node_modules etc for including in the .zip
       - run: cd ..
