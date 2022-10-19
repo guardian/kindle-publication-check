@@ -36,7 +36,7 @@ jobs:
     - name: Go to target dir and install everything there
       run: |
         cd target
-        yarn
+        yarn --production
     - name: See what we have at this point
       run: ls -al
     - name: Head back up a dir
