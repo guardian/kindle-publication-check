@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
+          cache: 'yarn'
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: eu-west-1
@@ -28,9 +28,12 @@ jobs:
         run: |
           LAST_TEAMCITY_BUILD=59
           echo GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD )) >> $GITHUB_ENV
-      - run: npm install
-      - run: npm run clean  # <-- delete any previous ./target dir
-      - run: npm run build  # <-- outputs files to ./target
+      - run: yarn install
+      - run: yarn run clean  # <-- delete any previous ./target dir
+      - run: yarn run build  # <-- outputs files to ./target
+      - run: pushd target
+      - run: yarn install --production  # <-- creates our node_modules etc for including in the .zip
+      - run: popd
       - run: mkdir dist
       - run: zip -r dist/kindle-publication-check.zip target
       - uses: guardian/actions-riff-raff@v2

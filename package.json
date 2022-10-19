@@ -20,7 +20,6 @@
   "scripts": {
     "clean": "rm -rf target",
     "build": "tsc",
-    "local": "node target/local.js",
-    "package": "ARTEFACT_PATH=$PWD/target VERBOSE=true riffraff-artefact"
+    "local": "node target/local.js"
   }
 }
