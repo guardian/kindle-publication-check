@@ -27,31 +27,29 @@ jobs:
     # now following example at https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs#example-using-yarn
     - name: Install dependencies with yarn
       run: yarn
-    - name: Clean and build to target dir
+    - name: Clean and build target
       run: |
         yarn run clean
         yarn run build
-    - name: Copy package.json to target dir
+    - name: Copy package.json to target
       run: cp package.json target
-    - name: Go to target dir and install everything there
+    - name: Go to target and install everything there in prod mode
       run: |
         cd target
         yarn --production
-    - name: See what we have at this point
-      run: ls -al
     - name: Head back up a dir
       run: cd ..
-    - name: Make a dist dir and create a .zip file in there
+    - name: Make a dist dir and create a .zip file there
       run: |
         mkdir dist
         zip -r dist/kindle-publication-check.zip target
-    - name: Acquire RiffRaff role
+    - name: Acquire RiffRaff AWS role
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: eu-west-1
         role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
         role-session-name: kindle-publication-check-build
-    - name: Send the .zip and riff-raff.yaml files to S3
+    - name: Send the .zip and riff-raff.yaml files from dist to S3
       uses: guardian/actions-riff-raff@v2
       with:
         app: kindle-publication-check
