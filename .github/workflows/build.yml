@@ -17,7 +17,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'yarn'
+          cache: 'npm'
+      # lifted from https://github.com/marketplace/actions/setup-yarn
+      - uses: mskelton/setup-yarn@v1
+        with:
+          node-version: '16.x'
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: eu-west-1
