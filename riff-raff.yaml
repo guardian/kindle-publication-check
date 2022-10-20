@@ -6,6 +6,6 @@ deployments:
     type: aws-lambda
     parameters:
       prefixStack: false
-      bucket: content-api-dist
+      bucketSsmLookup: true
       fileName: kindle-publication-check.zip
       functionNames: [kindle-publication-check-]
