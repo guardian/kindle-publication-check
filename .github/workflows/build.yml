@@ -52,7 +52,8 @@ jobs:
     - name: Send the .zip and riff-raff.yaml files from dist to S3
       uses: guardian/actions-riff-raff@v2
       with:
-        app: kindle-publication-check
+        # use projectName to override use of riff-raff.yaml's stack value as S3 prefix
+        projectName: Off-platform::kindle-publication-check
         configPath: riff-raff.yaml
         buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
         contentDirectories: |
