@@ -40,7 +40,7 @@ jobs:
         pwd
         yarn --production
     - name: Create a .zip file in the target dir
-      run:
+      run: |
         pwd
         zip -r kindle-publication-check.zip *.* node_modules
     - name: Did we make a .zip?
