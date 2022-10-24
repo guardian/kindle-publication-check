@@ -37,19 +37,19 @@ jobs:
       run: |
         cd target
         yarn --production
-    - name: Head back up a dir
-      run: cd ..
-    - name: Make a dist dir and create a .zip file there
+    - name: Make a ../dist dir and create a .zip file there
       run: |
-        mkdir dist
-        zip -r dist/kindle-publication-check.zip target
+        mkdir ../dist
+        zip -r ../dist/kindle-publication-check.zip *.js* node_modules
+    - name: pop up one dir level # <-- not sure how necessary this is but assuming
+      run: cd ..                 #     that the upload to s3 location(s) are relative
     - name: Acquire RiffRaff AWS role
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: eu-west-1
         role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
         role-session-name: kindle-publication-check-build
-    - name: Send the .zip and riff-raff.yaml files from dist to S3
+    - name: Send the dist .zip and riff-raff.yaml files to S3
       uses: guardian/actions-riff-raff@v2
       with:
         # use projectName to override use of riff-raff.yaml's stack value as S3 prefix
