@@ -39,8 +39,12 @@ jobs:
         yarn --production
     - name: Create a .zip file in the target dir
       run: zip -r kindle-publication-check.zip *.* node_modules
-    - name: pop up one dir level # <-- not sure how necessary this is but assuming
+    - name: Did we make a .zip?
+      run: ls -al
+    - name: up one dir level # <-- not sure how necessary this is but assuming
       run: cd ..                 #     that the upload to s3 location(s) are relative
+    - name: What have we got here?
+      run: ls -al
     - name: Acquire RiffRaff AWS role
       uses: aws-actions/configure-aws-credentials@v1
       with:
