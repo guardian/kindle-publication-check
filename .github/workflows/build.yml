@@ -35,13 +35,13 @@ jobs:
       run: cp package.json target
     - name: Go to target and install everything there in prod mode
       run: |
-        pwd   # <-- where are we?!
+        pwd
         cd target
-        pwd   # <-- where are we now?!
+        pwd
         yarn --production
     - name: Create a .zip file in the target dir
       run:
-        pwd   # <-- are we still where we think we are?!
+        pwd
         zip -r kindle-publication-check.zip *.* node_modules
     - name: Did we make a .zip?
       run: ls -al
