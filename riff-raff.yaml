@@ -1,6 +1,9 @@
 stacks: [content-api]
 regions: [eu-west-1]
 
+allowedStages:
+  - PROD
+
 deployments:
   kindle-publication-check:
     type: aws-lambda
