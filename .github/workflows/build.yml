@@ -24,9 +24,6 @@ jobs:
       run: |
         LAST_TEAMCITY_BUILD=59
         echo GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD )) >> $GITHUB_ENV
-    - name: Output build number
-      run: |
-        echo Build Number: ${{env.GITHUB_RUN_NUMBER}} >> $GITHUB_STEP_SUMMARY
     # now following example at https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs#example-using-yarn
     - name: Install dependencies with yarn
       run: yarn
@@ -48,7 +45,7 @@ jobs:
         role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
         role-session-name: kindle-publication-check-build
     - name: Send the target .zip and riff-raff.yaml files to S3
-      uses: guardian/actions-riff-raff@v2
+      uses: guardian/actions-riff-raff@pmr/offset-build-number
       with:
         # use projectName to override use of riff-raff.yaml's stack value as S3 prefix
         projectName: Off-platform::kindle-publication-check
