@@ -24,10 +24,9 @@ jobs:
       run: |
         LAST_TEAMCITY_BUILD=59
         echo GITHUB_RUN_NUMBER=$(( $GITHUB_RUN_NUMBER + $LAST_TEAMCITY_BUILD )) >> $GITHUB_ENV
-        echo "### Build Number: $GITHUB_RUN_NUMBER" >> $GITHUB_STEP_SUMMARY
     - name: Output build number
       run: |
-        echo Build number: ${{ env.GITHUB_RUN_NUMBER }}
+        echo "### Build Number: $GITHUB_RUN_NUMBER" >> $GITHUB_STEP_SUMMARY
     # now following example at https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs#example-using-yarn
     - name: Install dependencies with yarn
       run: yarn
