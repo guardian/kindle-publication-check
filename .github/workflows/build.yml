@@ -51,6 +51,7 @@ jobs:
         projectName: Off-platform::kindle-publication-check
         configPath: riff-raff.yaml
         buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
+        buildNumberOffset: 0
         contentDirectories: |
           kindle-publication-check:
             - target/kindle-publication-check.zip
