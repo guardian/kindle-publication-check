@@ -32,8 +32,9 @@ jobs:
       run: yarn
     - name: Clean and build target
       run: |
-        yarn run clean
-        yarn run build
+        yarn test
+        yarn clean
+        yarn build
     - name: Copy package.json to target
       run: cp package.json target
     - name: Go to target and install everything there in prod mode, then create the .zip file
