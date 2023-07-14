@@ -19,6 +19,21 @@ type SendEmailFn = (
   z: string[]
 ) => Promise<AWS.SES.SendEmailResponse>;
 
+export const checkLogs = (
+    allLogs: Array<AWS.CloudWatchLogs.OutputLogEvent>
+): Promise<void> => {
+  const errorRegexp = /WARN|ERROR|FATAL/;
+  const errors = allLogs
+      .filter(log => errorRegexp.test(log.message))
+      .filter(log => !log.message.startsWith("WARNING: sun.reflect.Reflection.getCallerClass is not supported"))
+      .map(log => log.message);
+  if (errors.length > 0) {
+    return Promise.reject(errors);
+  } else {
+    return Promise.resolve();
+  }
+};
+
 export function checkPublication(
   config: Config,
   sendEmail: SendEmailFn
@@ -172,17 +187,7 @@ export function checkPublication(
     );
   };
 
-  const checkLogs = (
-    allLogs: Array<AWS.CloudWatchLogs.OutputLogEvent>
-  ): Promise<void> => {
-    const errorRegexp = /WARN|ERROR|FATAL/;
-    const errors = allLogs.filter(log => errorRegexp.test(log.message)).map(log => log.message);
-    if (errors.length > 0) {
-      return Promise.reject(errors);
-    } else {
-      return Promise.resolve();
-    }
-  };
+
 
   const sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> =>
     sendEmail(
