@@ -187,6 +187,8 @@ export function checkPublication(
     );
   };
 
+
+
   const sendSuccessEmail = (info: PublicationInfo): Promise<SendEmailResponse> =>
     sendEmail(
       `Kindle publication succeeded (${config.Today})`,
